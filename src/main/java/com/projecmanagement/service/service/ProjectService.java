@@ -1,0 +1,117 @@
+package com.projecmanagement.service.service;
+
+import com.projecmanagement.service.dto.*;
+import com.projecmanagement.service.model.Project;
+import com.projecmanagement.service.model.Report;
+import com.projecmanagement.service.model.Sprint;
+import com.projecmanagement.service.model.TeamDTO;
+import com.projecmanagement.service.repository.ProjectRepository;
+import com.projecmanagement.service.repository.SprintRepository;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.scheduling.config.Task;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class ProjectService {
+
+    private final ProjectRepository projectRepository;
+    private final SprintRepository sprintRepository;
+    private final RestTemplate restTemplate;
+
+    public ProjectService(ProjectRepository projectRepository, SprintRepository sprintRepository, RestTemplate restTemplate) {
+        this.projectRepository = projectRepository;
+        this.sprintRepository = sprintRepository;
+        this.restTemplate = restTemplate;
+    }
+
+    // Create new project
+    public ResponseEntity<Object> createNewProject(ProjectDetailsDTO projectDetailsDTO) {
+
+        // Creating and saving a new project
+        Project project = new Project();
+        project.setProjectName(projectDetailsDTO.getProjectName());
+        project.setCreatedBy(projectDetailsDTO.getCreatedBy());
+        project.setCreatedAt(projectDetailsDTO.getCreatedAt());
+        projectRepository.save(project);
+
+        return new ResponseEntity<>("Project is created!", HttpStatus.OK);
+    }
+
+    // Get project data:
+
+
+    // Create a sprint
+    public ResponseEntity<Object> createSprint(Integer projectId, SprintDTO sprintDTO){
+        Project project = projectRepository.findById(projectId).get();
+        List<Integer> sprintsIds = project.getSprintsIds();
+        Sprint sprint = new Sprint();
+        sprint.setSprintName(sprintDTO.getSprintName());
+        sprint.setStatus(sprintDTO.getStatus());
+        sprint.setStartDate(sprintDTO.getStartDate());
+        sprint.setEndDate(sprintDTO.getEndDate());
+        sprint.setTasksIds(sprintDTO.getTasksIds());
+        sprintsIds.add(sprint.getSprintID());
+        project.setSprintsIds(sprintsIds);
+        sprintRepository.save(sprint);
+        return new ResponseEntity<>("SPRINT HAS BEEN ADDED",HttpStatus.OK);
+    }
+
+    // Assign task to project:
+
+
+    // Generate report
+
+    public ResponseEntity<ReportDTO> generateReport(Integer projectId){
+        Project project = projectRepository.findById(projectId).get();
+        String serviceURL = "http://localhost:9000/api/team/get_team_members";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        Report report = new Report();
+
+        Integer teamIds = project.getTeamId();
+
+        HttpEntity<Integer> httpEntity = new HttpEntity<>(teamIds,headers);
+
+        ResponseEntity<List<UserDTO>> response = restTemplate.exchange(
+                serviceURL,
+                HttpMethod.POST, // Ensure the method matches the server
+                httpEntity,
+                new ParameterizedTypeReference<List<UserDTO>>() {}
+        );
+        List<UserDTO> teamMembers = response.getBody();
+        ReportDTO reportDTO = new ReportDTO();
+        reportDTO.setProjectName(project.getProjectName());
+        reportDTO.setMembers(teamMembers);
+        reportDTO
+
+
+    }
+
+    public ResponseEntity<Object> closeSprint(Integer sprintId){
+        Sprint sprint = sprintRepository.findById(sprintId).get();
+        List<Integer> sprintTasks = sprint.getTasksIds();
+        String taskServiceURL = "http://localhost:8081/api/task/check_sprint_task_completion";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<List<Integer>> httpEntity = new HttpEntity<>(sprintTasks,headers);
+        ResponseEntity<List<TaskDTO>> response = restTemplate
+                .exchange(
+                        taskServiceURL,
+                        HttpMethod.POST,
+                        httpEntity,
+                        new ParameterizedTypeReference<List<TaskDTO>>() {}
+                );
+        List<TaskDTO> tasks = response.getBody();
+        for (TaskDTO task : tasks){
+            if(task.get)
+        }
+    }
+
+
+}
