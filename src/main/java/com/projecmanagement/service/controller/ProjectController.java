@@ -1,10 +1,13 @@
 package com.projecmanagement.service.controller;
 
 import com.projecmanagement.service.dto.ProjectDetailsDTO;
+import com.projecmanagement.service.dto.ReportDTO;
 import com.projecmanagement.service.service.ProjectService;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/project")
@@ -22,7 +25,7 @@ public class ProjectController {
     }
 
     @GetMapping("/generate_report/{projectId}")
-    public ResponseEntity<Object> generateReport(@PathVariable Integer projectId){
+    public ResponseEntity<ReportDTO> generateReport(@PathVariable Integer projectId){
         return projectService.generateReport(projectId);
     }
 }
