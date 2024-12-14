@@ -7,9 +7,11 @@ import com.projecmanagement.service.model.Sprint;
 import com.projecmanagement.service.model.TeamDTO;
 import com.projecmanagement.service.repository.ProjectRepository;
 import com.projecmanagement.service.repository.SprintRepository;
+import org.apache.tomcat.util.http.parser.HttpParser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -66,34 +68,41 @@ public class ProjectService {
 
 
     // Generate report
-
+    @Async
     public ResponseEntity<ReportDTO> generateReport(Integer projectId){
         Project project = projectRepository.findById(projectId).get();
-        String serviceURL = "http://localhost:9000/api/team/get_team_members";
+        String teamServiceURL = "http://localhost:9000/api/team/get_team_members/"+projectId;
+        String tasksServiceURL = "http://localhost:8081/api/task/get_project_tasks/"+projectId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         Report report = new Report();
-
         Integer teamIds = project.getTeamId();
-
-        HttpEntity<Integer> httpEntity = new HttpEntity<>(teamIds,headers);
-
-        ResponseEntity<List<UserDTO>> response = restTemplate.exchange(
-                serviceURL,
-                HttpMethod.POST, // Ensure the method matches the server
-                httpEntity,
+        List<Integer> tasksIds = project.getTasksIds();
+        //HttpEntity<Integer> httpEntity1 = new HttpEntity<>(teamIds,headers);
+        HttpEntity<List<Integer>> httpEntity2 = new HttpEntity<>(tasksIds,headers);
+        ResponseEntity<List<UserDTO>> teamResponse = restTemplate.exchange(
+                teamServiceURL,
+                HttpMethod.GET,
+                null,
                 new ParameterizedTypeReference<List<UserDTO>>() {}
         );
-        List<UserDTO> teamMembers = response.getBody();
+        ResponseEntity<List<TaskDTO>> tasks_response = restTemplate
+                .exchange(
+                        tasksServiceURL,
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<List<TaskDTO>>() {
+                        }
+                );
+        List<UserDTO> teamMembers = teamResponse.getBody();
         ReportDTO reportDTO = new ReportDTO();
         reportDTO.setProjectName(project.getProjectName());
         reportDTO.setMembers(teamMembers);
-        reportDTO
-
-
+        reportDTO.setTasks(tasks_response.getBody());
+        return new ResponseEntity<>(reportDTO,HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> closeSprint(Integer sprintId){
+    public void closeSprint(Integer sprintId){
         Sprint sprint = sprintRepository.findById(sprintId).get();
         List<Integer> sprintTasks = sprint.getTasksIds();
         String taskServiceURL = "http://localhost:8081/api/task/check_sprint_task_completion";
@@ -108,9 +117,6 @@ public class ProjectService {
                         new ParameterizedTypeReference<List<TaskDTO>>() {}
                 );
         List<TaskDTO> tasks = response.getBody();
-        for (TaskDTO task : tasks){
-            if(task.get)
-        }
     }
 
 
