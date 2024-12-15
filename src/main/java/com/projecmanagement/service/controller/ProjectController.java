@@ -24,6 +24,11 @@ public class ProjectController {
         return projectService.createNewProject(projectDetailsDTO);
     }
 
+    @GetMapping("/get_project_by_creator/{userId}")
+    public ResponseEntity<List<ProjectDetailsDTO>> getProject(@PathVariable Integer userId){
+        return projectService.getProjectsByCreator(userId);
+    }
+
     @GetMapping("/generate_report/{projectId}")
     public ResponseEntity<ReportDTO> generateReport(@PathVariable Integer projectId){
         return projectService.generateReport(projectId);
