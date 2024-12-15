@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
@@ -117,6 +119,45 @@ public class ProjectService {
                         new ParameterizedTypeReference<List<TaskDTO>>() {}
                 );
         List<TaskDTO> tasks = response.getBody();
+    }
+
+    @Async
+    public List<TaskDTO> getProjectTasks(Integer projectId){
+        String tasksServiceURL = "http://localhost:8081/api/task/get_project_tasks/"+projectId;
+        ResponseEntity<List<TaskDTO>> response = restTemplate
+                .exchange(
+                        tasksServiceURL,
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<List<TaskDTO>>() {
+                        }
+                );
+        return response.getBody();
+    }
+    public ResponseEntity<List<ProjectDetailsDTO>> getProjectsByCreator(Integer userId) {
+        // Fetch all projects created by the user
+        List<Project> projects = projectRepository.findAllByCreatedBy(userId);
+
+        // Map projects to ProjectDetailsDTO
+        List<ProjectDetailsDTO> projectDetailsDTOS = projects.stream()
+                .map(project -> {
+                    // Fetch tasks specific to the project
+                    List<TaskDTO> taskDTOsForProject = getProjectTasks(project.getProjectID());
+
+                    // Create ProjectDetailsDTO
+                    return new ProjectDetailsDTO(
+                            project.getProjectID(),
+                            project.getProjectName(),
+                            project.getStatus(),
+                            project.getCreatedAt(),
+                            project.getCreatedBy(),
+                            taskDTOsForProject, // Attach tasks for this project
+                            project.getTeamId()
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(projectDetailsDTOS, HttpStatus.OK);
     }
 
 

@@ -22,6 +22,9 @@ public class Project {
     @Column(nullable = true)
     private String projectName;
 
+    @Column(name = "status")
+    private String status;
+
     @Column(name = "created_at", nullable = true)
     private Date createdAt;
 
