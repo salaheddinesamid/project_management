@@ -14,23 +14,26 @@ import java.util.List;
 public class ProjectDetailsDTO {
     Integer id;
     String projectName;
+    String status;
     Date createdAt;
     Integer createdBy;
     List<TaskDTO> tasks;
-    List<TeamDTO> teams;
+    Integer team;
     public ProjectDetailsDTO(
             Integer id,
             String projectName,
+            String status,
             Date createdAt,
             Integer createdBy,
             List<TaskDTO> tasks,
-            List<TeamDTO> teams
+            Integer team
     ){
         this.id = id;
         this.projectName = projectName;
+        this.status = status;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
         this.tasks = tasks;
-        this.teams = teams;
+        this.team = team;
     }
 }
