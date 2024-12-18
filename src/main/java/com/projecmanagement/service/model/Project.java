@@ -39,4 +39,7 @@ public class Project {
 
     @Column(name = "team_id")
     Integer teamId;
+
+    @Column(name = "progress")
+    Integer progress;
 }
