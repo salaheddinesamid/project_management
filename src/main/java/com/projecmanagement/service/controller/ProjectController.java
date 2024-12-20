@@ -2,9 +2,11 @@ package com.projecmanagement.service.controller;
 
 import com.projecmanagement.service.dto.ProjectDetailsDTO;
 import com.projecmanagement.service.dto.ReportDTO;
+import com.projecmanagement.service.dto.TaskDTO;
 import com.projecmanagement.service.service.ProjectService;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.config.Task;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,13 +26,19 @@ public class ProjectController {
         return projectService.createNewProject(projectDetailsDTO);
     }
 
+
     @GetMapping("/get_project_by_creator/{userId}")
     public ResponseEntity<List<ProjectDetailsDTO>> getProject(@PathVariable Integer userId){
-        return projectService.getProjectsByCreator(userId);
+        return projectService.getAllProjectDetails(userId);
     }
 
     @GetMapping("/generate_report/{projectId}")
     public ResponseEntity<ReportDTO> generateReport(@PathVariable Integer projectId){
         return projectService.generateReport(projectId);
+    }
+
+    @GetMapping("/get_project_tasks/{projectId}")
+    public ResponseEntity<List<TaskDTO>> projectDetailsDTOResponseEntity(@PathVariable Integer projectId){
+        return projectService.getProjectTasks(projectId);
     }
 }

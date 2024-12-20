@@ -122,7 +122,37 @@ public class ProjectService {
     }
 
     @Async
-    public List<TaskDTO> getProjectTasks(Integer projectId){
+    public ResponseEntity<List<ProjectDetailsDTO>> getAllProjectDetails(Integer creatorId){
+        String taskServiceURL = "http://localhost:8081/api/task/get_project_tasks/"+creatorId;
+        List<Project> projects = projectRepository.findAllByCreatedBy(creatorId);
+        List<ProjectDetailsDTO> projectsDTO = projects
+                .stream()
+                .map(project -> {
+                    ResponseEntity<List<TaskDTO>> tasks = restTemplate
+                            .exchange(
+                                    taskServiceURL,
+                                    HttpMethod.GET,
+                                    null,
+                                    new ParameterizedTypeReference<List<TaskDTO>>() {
+                                    }
+                            );
+                    ProjectDetailsDTO projectDetailsDTO = new ProjectDetailsDTO(
+                            project.getProjectID(),
+                            project.getProjectName(),
+                            project.getStatus(),
+                            project.getCreatedAt(),
+                            project.getCreatedBy(),
+                            tasks.getBody(),
+                            project.getTeamId()
+                    );
+                    return projectDetailsDTO;
+                }).collect(Collectors.toList());
+
+        return new ResponseEntity<>(projectsDTO,HttpStatus.OK);
+    }
+
+    @Async
+    public ResponseEntity<List<TaskDTO>> getProjectTasks(Integer projectId){
         String tasksServiceURL = "http://localhost:8081/api/task/get_project_tasks/"+projectId;
         ResponseEntity<List<TaskDTO>> response = restTemplate
                 .exchange(
@@ -132,8 +162,9 @@ public class ProjectService {
                         new ParameterizedTypeReference<List<TaskDTO>>() {
                         }
                 );
-        return response.getBody();
+        return response;
     }
+    /*
     public ResponseEntity<List<ProjectDetailsDTO>> getProjectsByCreator(Integer userId) {
         // Fetch all projects created by the user
         List<Project> projects = projectRepository.findAllByCreatedBy(userId);
@@ -158,7 +189,7 @@ public class ProjectService {
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(projectDetailsDTOS, HttpStatus.OK);
-    }
+    }*/
 
 
 }
