@@ -120,23 +120,21 @@ public class ProjectService {
                 );
         List<TaskDTO> tasks = response.getBody();
     }
-
-    @Async
     public ResponseEntity<List<ProjectDetailsDTO>> getAllProjectDetails(Integer creatorId){
-        String taskServiceURL = "http://localhost:8081/api/task/get_project_tasks/"+creatorId;
+        String taskServiceURL = "http://localhost:8081/api/task/get_project_tasks/";
         List<Project> projects = projectRepository.findAllByCreatedBy(creatorId);
         List<ProjectDetailsDTO> projectsDTO = projects
                 .stream()
                 .map(project -> {
                     ResponseEntity<List<TaskDTO>> tasks = restTemplate
                             .exchange(
-                                    taskServiceURL,
+                                    taskServiceURL+project.getProjectID(),
                                     HttpMethod.GET,
                                     null,
                                     new ParameterizedTypeReference<List<TaskDTO>>() {
                                     }
                             );
-                    ProjectDetailsDTO projectDetailsDTO = new ProjectDetailsDTO(
+                    return new ProjectDetailsDTO(
                             project.getProjectID(),
                             project.getProjectName(),
                             project.getStatus(),
@@ -145,7 +143,6 @@ public class ProjectService {
                             tasks.getBody(),
                             project.getTeamId()
                     );
-                    return projectDetailsDTO;
                 }).collect(Collectors.toList());
 
         return new ResponseEntity<>(projectsDTO,HttpStatus.OK);
