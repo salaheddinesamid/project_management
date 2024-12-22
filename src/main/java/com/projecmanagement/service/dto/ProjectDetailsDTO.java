@@ -1,6 +1,5 @@
 package com.projecmanagement.service.dto;
 
-import com.projecmanagement.service.model.TeamDTO;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

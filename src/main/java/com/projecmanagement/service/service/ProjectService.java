@@ -4,20 +4,14 @@ import com.projecmanagement.service.dto.*;
 import com.projecmanagement.service.model.Project;
 import com.projecmanagement.service.model.Report;
 import com.projecmanagement.service.model.Sprint;
-import com.projecmanagement.service.model.TeamDTO;
 import com.projecmanagement.service.repository.ProjectRepository;
 import com.projecmanagement.service.repository.SprintRepository;
-import org.apache.tomcat.util.http.parser.HttpParser;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 

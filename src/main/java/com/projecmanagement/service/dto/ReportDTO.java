@@ -5,7 +5,6 @@ import com.projecmanagement.service.model.Sprint;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.catalina.User;
 
 import java.util.List;
 

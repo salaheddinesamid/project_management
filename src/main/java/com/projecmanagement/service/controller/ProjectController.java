@@ -4,9 +4,7 @@ import com.projecmanagement.service.dto.ProjectDetailsDTO;
 import com.projecmanagement.service.dto.ReportDTO;
 import com.projecmanagement.service.dto.TaskDTO;
 import com.projecmanagement.service.service.ProjectService;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.config.Task;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
