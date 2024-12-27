@@ -1,8 +1,10 @@
 package com.projecmanagement.service.controller;
 
+import com.projecmanagement.service.dto.HistoryDTO;
 import com.projecmanagement.service.dto.ProjectDetailsDTO;
 import com.projecmanagement.service.dto.ReportDTO;
 import com.projecmanagement.service.dto.TaskDTO;
+import com.projecmanagement.service.model.History;
 import com.projecmanagement.service.service.ProjectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +42,13 @@ public class ProjectController {
         return projectService.getProjectTasks(projectId);
     }
 
-    @PostMapping("/new_activity")
-    public ResponseEntity<Object>
+    @PostMapping("/new_history")
+    public ResponseEntity<Object> saveNewProjectHistory(@RequestBody HistoryDTO historyDTO){
+        return projectService.AddHistory(historyDTO);
+    }
+
+    @GetMapping("/get_project_history/{projectId}")
+    public ResponseEntity<List<History>> getProjectHistory(@PathVariable Integer projectId){
+        return projectService.projectHistory(projectId);
+    }
 }

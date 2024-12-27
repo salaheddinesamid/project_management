@@ -24,6 +24,6 @@ public class History {
     @Column(name = "action")
     String action;
 
-    @ManyToOne
-    Project project;
+    @Column(name = "projectId")
+    Integer projectId;
 }

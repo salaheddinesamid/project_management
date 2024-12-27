@@ -1,9 +1,11 @@
 package com.projecmanagement.service.service;
 
 import com.projecmanagement.service.dto.*;
+import com.projecmanagement.service.model.History;
 import com.projecmanagement.service.model.Project;
 import com.projecmanagement.service.model.Report;
 import com.projecmanagement.service.model.Sprint;
+import com.projecmanagement.service.repository.HistoryRepository;
 import com.projecmanagement.service.repository.ProjectRepository;
 import com.projecmanagement.service.repository.SprintRepository;
 import org.springframework.core.ParameterizedTypeReference;
@@ -20,11 +22,13 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final SprintRepository sprintRepository;
+    private final HistoryRepository historyRepository;
     private final RestTemplate restTemplate;
 
-    public ProjectService(ProjectRepository projectRepository, SprintRepository sprintRepository, RestTemplate restTemplate) {
+    public ProjectService(ProjectRepository projectRepository, SprintRepository sprintRepository, HistoryRepository historyRepository, RestTemplate restTemplate) {
         this.projectRepository = projectRepository;
         this.sprintRepository = sprintRepository;
+        this.historyRepository = historyRepository;
         this.restTemplate = restTemplate;
     }
 
@@ -99,8 +103,19 @@ public class ProjectService {
     }
 
     // Add project history:
-    public void AddHistory(HistoryDTO historyDTO){
+    public ResponseEntity<Object> AddHistory(HistoryDTO historyDTO){
+        History history = new History();
+        history.setProjectId(historyDTO.getProjectId());
+        history.setDate(historyDTO.getActionDate());
+        history.setAction(historyDTO.getAction());
+        historyRepository.save(history);
+        return new ResponseEntity<>("ACTION SAVED", HttpStatus.OK);
+    }
 
+    // Get project history:
+    public ResponseEntity<List<History>> projectHistory(Integer projectId){
+        List<History> histories = historyRepository.findAllByProjectId(projectId);
+        return new ResponseEntity<>(histories,HttpStatus.OK);
     }
 
     public void closeSprint(Integer sprintId){
