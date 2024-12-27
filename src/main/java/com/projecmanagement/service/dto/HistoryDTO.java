@@ -13,15 +13,4 @@ public class HistoryDTO {
     private String action;
     private Integer projectId;
 
-    public HistoryDTO(
-            Date actionDate,
-            Integer userId,
-            String action,
-            Integer projectId
-    ){
-        this.actionDate = actionDate;
-        this.userId = userId;
-        this.action = action;
-        this.projectId = projectId;
-    }
 }
