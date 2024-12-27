@@ -98,6 +98,11 @@ public class ProjectService {
         return new ResponseEntity<>(reportDTO,HttpStatus.OK);
     }
 
+    // Add project history:
+    public void AddHistory(HistoryDTO historyDTO){
+
+    }
+
     public void closeSprint(Integer sprintId){
         Sprint sprint = sprintRepository.findById(sprintId).get();
         List<Integer> sprintTasks = sprint.getTasksIds();

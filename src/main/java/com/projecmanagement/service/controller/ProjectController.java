@@ -39,4 +39,7 @@ public class ProjectController {
     public ResponseEntity<List<TaskDTO>> projectDetailsDTOResponseEntity(@PathVariable Integer projectId){
         return projectService.getProjectTasks(projectId);
     }
+
+    @PostMapping("/new_activity")
+    public ResponseEntity<Object>
 }
